@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupremeChain | Crypto Trading Hub</title>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Video Background Container */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* Behind overlay but in front of fallback */
+            overflow: hidden;
+        }
+
+        /* Video Element */
+        #bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        /* Dark Overlay for Better Text Contrast */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,100,0,0.3) 100%);
+            z-index: -1;
+        }
+
+        /* Fallback Gradient (only shows if video fails) */
+        .gradient-fallback {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+         background-image: url('https://img.freepik.com/premium-photo/stock-exchange-market-analysis-forex-indicator-trading-graph-chart-ai-photo_555983-1603.jpg');
+            background-size: 200% 200%;
+            animation: gradientPulse 15s ease infinite;
+            z-index: -3;
+            display: none;
+        }
+
+        @keyframes gradientPulse {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Content Container */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        /* Hide content when modal is active */
+        body.modal-active .content-wrapper {
+            display: none;
+        }
+
+        header {
+            color: white;
+            text-align: center;
+            padding: 40px 0 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #00ff87, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 135, 0.3);
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+        }
+
+        .crypto-pulse {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: 1;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="white" stroke-width="0.5" stroke-dasharray="5,5"/></svg>');
+            background-size: 30px 30px;
+        }
+
+        section {
+            color: white;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        button {
+            background: linear-gradient(to right, #00ff87, #00d2ff);
+            color: #111;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            display: block;
+            margin: 40px auto;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 255, 135, 0.6);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            overflow: auto;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .frm {
+            display: block;
+            border: 2px solid #00ff87;
+            margin: auto;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 255, 135, 0.3);
+            background-color: rgba(20, 20, 20, 0.9);
+            color: #fff;
+            border-radius: 15px;
+            max-width: 450px;
+            position: relative;
+            animation: animatezoom 0.6s;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes animatezoom {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        input {
+            width: 100%;
+            height: 45px;
+            border-left: 5px solid #00ff87;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 20px;
+            padding: 0 15px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-right: 1px solid #333;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s ease;
+            
+        }
+
+        input:focus {
+            border-left: 5px solid #00d2ff;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        #pfp {
+            border-radius: 50%;
+            border: 3px solid #00ff87;
+            width: 100px;
+            height: 100px;
+            display: block;
+            margin: 0 auto 20px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        #pfp:hover {
+            border-color: #00d2ff;
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .signupbtn {
+            width: 100%;
+            height: 45px;
+            background: linear-gradient(to right, #00ff87, #00d2ff);
+            border-radius: 5px;
+            color: #111;
+            font-size: 26px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            margin-top: 20px;
+            
+           
+        }
+
+        .signupbtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 135, 0.4);
+        }
+
+        .closebtn {
+            font-size: 30px;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #aaa;
+        }
+
+        .closebtn:hover {
+            color: #ff5555;
+            transform: rotate(90deg) scale(1.2);
+        }
+
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+            color: #00ff87;
+            font-weight: 500;
+        }
+
+        h2 {
+            text-align: center;
+            color: #00ff87;
+            margin-bottom: 30px;
+            font-size: 28px;
+           
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #00ff87;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .video-background {
+                display: none;
+            }
+            .gradient-fallback {
+                display: block;
+            }
+            .logo {
+                font-size: 2.5rem;
+            }
+            .tagline {
+                font-size: 1rem;
+            }
+            section {
+                padding: 15px;
+            }
+            .frm {
+                padding: 25px;
+                width: 90%;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="https://media.istockphoto.com/id/1370988635/video/fictional-view-of-changing-stock-market-ticker.mp4?s=mp4-640x640-is&k=20&c=3rg4Zxidt16AVrJlsRYprGj-aTwlibAX4CcfgBrIMPs=" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- Gradient Overlay -->
+    <div class="overlay"></div>
+    
+    <!-- Gradient Fallback (for mobile and if video fails) -->
+    <div class="gradient-fallback"></div>
+
+    <!-- Content -->
+    <div class="content-wrapper">
+        <header>
+            <div class="crypto-pulse"></div>
+            <div class="header-content">
+                <h1 class="logo">SupremeChain</h1>
+                <p class="tagline">The Ultimate Crypto Trading Experience</p>
+            </div>
+        </header>
+        <section>
+            <h1>Welcome to the Future of Finance</h1>
+            <p><strong>🚀 Where Bold Traders Thrive</strong></p>
+            <p>The crypto market never sleeps—and neither do we. This is your all-access pass to the digital revolution, where fortunes are made, trends are spotted early, and the rules of money are rewritten.</p>
+            <p>Whether you're here to trade, learn, or conquer, you're in the right place.</p>
+
+            <p>This isn't just trading. This is financial sovereignty.</p>
+
+            <h2>📈 Are You Ready?</h2>
+            <p>The market rewards the bold, the patient, and the prepared.</p>
+            <p>Will you watch from the sidelines—or will you step up and claim your edge?</p>
+            <p>Join us. Let's make moves.</p>
+        </section>
+<img src="https://ibb.co/hFTnT614" alt="">
+        <button onclick="showme()">Get Started Now</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <form action="" class="frm animate">
+            <span class="closebtn" id="closebtn" onclick="hideme()">&times;</span>
+            <h2>Join SupremeChain</h2>
+            <div class="ima2">
+                <img src="https://i.pinimg.com/736x/cf/1b/0a/cf1b0a4e1ba7ebefa66f282d6ed899c7.jpg" alt="Profile" id="pfp">
+            </div>
+            
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username">
+            
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email address">
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Create a strong password">
+            
+
+  <a href="file:///C:/Users/Owner/Documents/myprojectgit/hompage.html" class="signupbtn" style="text-decoration: none; display: inline-block; text-align: center;">
+        Claim Your Spot
+    </a>
+        </form>
+    </div>
+
+    <script>
+        // Video Background Handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('bg-video');
+            
+            // Try to play video (muted autoplay)
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // If video fails to play, show gradient fallback
+                    document.querySelector('.gradient-fallback').style.display = 'block';
+                    video.style.display = 'none';
+                });
+            }
+            
+            // Mobile detection - always use gradient on mobile
+            if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                document.querySelector('.gradient-fallback').style.display = 'block';
+                video.style.display = 'none';
+            }
+        });
+
+        // Modal Functions
+        function showme(){
+            document.getElementById('modal').style.display='flex';
+            document.body.classList.add('modal-active');
+        }
+        
+        function hideme(){
+            document.getElementById('modal').style.display='none';
+            document.body.classList.remove('modal-active');
+        }
+        
+    
+    </script>
+</body>
+</html>
