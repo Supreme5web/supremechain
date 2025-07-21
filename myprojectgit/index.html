@@ -304,28 +304,49 @@
         strong {
             color: #00ff87;
         }
-
         /* Mobile Optimization */
-        @media (max-width: 768px) {
-            .video-background {
-                display: none;
-            }
-            .gradient-fallback {
-                display: block;
-            }
-            .logo {
-                font-size: 2.5rem;
-            }
-            .tagline {
-                font-size: 1rem;
-            }
-            section {
-                padding: 15px;
-            }
-            .frm {
-                padding: 25px;
-                width: 90%;
-            }
+@media (max-width: 768px) {
+  .video-background {
+    display: none;
+  }
+  
+  .gradient-fallback {
+    display: block;
+  }
+  
+  /* Fixed Logo Section */
+  .logo {
+    font-size: 1.6rem; /* Reduced from 2.5rem */
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: visible;
+    padding: 0 5px;
+    margin: 0 auto;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .header-content {
+    padding: 20px 10px;
+    overflow: visible;
+  }
+  
+  .tagline {
+    font-size: 0.9rem; /* Reduced from 1rem */
+    margin-top: 5px;
+  }
+  
+  section {
+    padding: 15px;
+  }
+  
+  .frm {
+    padding: 25px;
+    width: 90%;
+  }
+ 
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
